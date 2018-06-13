@@ -95,6 +95,10 @@ mod fault_injector;
 mod pcap_writer;
 #[cfg(any(feature = "std", feature = "alloc"))]
 mod loopback;
+#[cfg(any(feature = "phy-sel4"))]
+mod sel4;
+#[cfg(all(feature = "phy-client"))]
+mod client;
 #[cfg(all(feature = "phy-raw_socket", target_os = "linux"))]
 mod raw_socket;
 #[cfg(all(feature = "phy-tap_interface", target_os = "linux"))]
@@ -112,6 +116,10 @@ pub use self::loopback::Loopback;
 pub use self::raw_socket::RawSocket;
 #[cfg(all(feature = "phy-tap_interface", target_os = "linux"))]
 pub use self::tap_interface::TapInterface;
+#[cfg(all(feature = "phy-sel4"))]
+pub use self::sel4::Sel4Device;
+#[cfg(all(feature = "phy-client"))]
+pub use self::client::ClientDevice;
 
 /// A tracer device for Ethernet frames.
 pub type EthernetTracer<T> = Tracer<T, super::wire::EthernetFrame<&'static [u8]>>;
