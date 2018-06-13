@@ -157,6 +157,19 @@ impl<'a> Packet<'a> {
         }
     }
 
+    /// Get an immutable slice of the underlying packet data and reset the fragment
+    pub fn get_buffer_and_reset(&mut self, start: usize, end: usize) -> &[u8] {
+        match self.state {
+            PacketState::Empty => {
+                panic!("Packet is empty, cannot access its buffer");
+            },
+            PacketState::Assembling{..} => {
+            }
+        };
+        self.state = PacketState::Empty;
+        &self.rx_buffer[start..end]
+    }
+
     /// Get a mutable slice of the underlying packet data
     pub fn get_buffer_mut(&mut self, start: usize, end: usize) -> &mut [u8] {
         match self.state {

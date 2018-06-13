@@ -612,7 +612,6 @@ impl<'b, 'c, 'e> InterfaceInner<'b, 'c, 'e> {
         // Pass every IP packet to all raw sockets we have registered.
         for mut raw_socket in sockets.iter_mut().filter_map(RawSocket::downcast) {
             if !raw_socket.accepts(&ip_repr) { continue }
-
             match raw_socket.process(&ip_repr, ip_payload, &checksum_caps) {
                 // The packet is valid and handled by socket.
                 Ok(()) => handled_by_raw_socket = true,
@@ -743,7 +742,7 @@ impl<'b, 'c, 'e> InterfaceInner<'b, 'c, 'e> {
                         ipv4_packet.set_total_len(front as u16);
                         ipv4_packet.fill_checksum();
                     }
-                    return Ok(Some(Ipv4Packet::new_checked(fragment.get_buffer(0,front))?));
+                    return Ok(Some(Ipv4Packet::new_checked(fragment.get_buffer_and_reset(0,front))?));
                 }
 
                 // not the last fragment
@@ -887,7 +886,6 @@ impl<'b, 'c, 'e> InterfaceInner<'b, 'c, 'e> {
         #[cfg(all(feature = "socket-icmp", feature = "proto-ipv4"))]
         for mut icmp_socket in _sockets.iter_mut().filter_map(IcmpSocket::downcast) {
             if !icmp_socket.accepts(&ip_repr, &icmp_repr, &checksum_caps) { continue }
-
             match icmp_socket.process(&ip_repr, &icmp_repr, &checksum_caps) {
                 // The packet is valid and handled by socket.
                 Ok(()) => handled_by_icmp_socket = true,
